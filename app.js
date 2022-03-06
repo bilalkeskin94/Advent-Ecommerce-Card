@@ -43,33 +43,63 @@ const menuItems = [
 	},
 ];
 
+const addToCard = document.querySelectorAll('.add');
+const img = document.createElement('img');
+const cardSummary = document.querySelector('.cart-summary');
+const removeFromCard = document.querySelectorAll('.in-cart');
+const decrease = document.querySelectorAll('.decrease');
+const increase = document.querySelectorAll('.increase');
+
 class EcommerceCard {
 	constructor() {
-		this.addCart();
 		this.removeCart();
 		this.decreaseQuantity();
 		this.increaseQuantity();
+        this.updateTotals();
+		this.addCart();
 	}
 
 	addCart() {
-		const add = document.querySelectorAll('.add');
-		const img = document.createElement('img');
 		img.src = './images/check.svg';
-		add.forEach((item) => {
-			item.addEventListener('click', () => {
+		addToCard.forEach((item) => {
+			item.addEventListener('click', (e) => {
+                e.stopImmediatePropagation();
 				item.classList.remove('add');
 				item.classList.add('in-cart');
-				item.innerHTML = `
+                item.innerHTML = `
                     <img src="./images/check.svg" alt="check">
                     In Cart
-                `;
+                `;  
+                cardSummary.innerHTML += `
+                <li>
+                <div class="plate">
+                  ${item.parentElement.parentElement.querySelector('.plate').innerHTML}
+                  <div class="quantity">1</div>
+                </div>
+                <div class="content">
+                  <p class="menu-item">${item.parentElement.querySelector('.menu-item').textContent}</p>
+                  <p class="price">${item.parentElement.querySelector('.price').textContent}</p>
+                </div>
+                <div class="quantity__wrapper">
+                  <button class="decrease">
+                    <img src="images/chevron.svg" />
+                  </button>
+                  <div class="quantity">1</div>
+                  <button class="increase">
+                    <img src="images/chevron.svg" />
+                  </button>
+                </div>
+                <div class="subtotal">
+                ${item.parentElement.querySelector('.price').textContent}
+                </div>
+              </li>
+              `;
 			});
 		});
 	}
 
 	removeCart() {
-		const remove = document.querySelectorAll('.in-cart');
-		remove.forEach((item) => {
+		removeFromCard.forEach((item) => {
 			item.addEventListener('click', () => {
 				item.classList.remove('in-cart');
 				item.classList.add('add');
@@ -81,31 +111,55 @@ class EcommerceCard {
 	}
 
 	decreaseQuantity() {
-		const decrease = document.querySelectorAll('.decrease');
 		decrease.forEach((item) => {
+            let subtotal = item.parentElement.parentElement.querySelector('.subtotal');
 			item.addEventListener('click', () => {
-				if (item.parentElement.querySelector('.quantity').textContent === '0') {
-					item.parentElement.parentElement.remove();
-				}
 				item.parentElement.querySelector('.quantity').textContent--;
 				item.parentElement.previousElementSibling.previousElementSibling.querySelector(
 					'.quantity'
 				).textContent--;
+                if (item.parentElement.querySelector('.quantity').textContent <= 0) {
+					item.parentElement.parentElement.remove();
+				}
+                const quantity = item.parentElement.previousElementSibling.previousElementSibling.children[1].textContent
+                const price = item.parentElement.previousElementSibling.children[1].textContent.substring(1);
+                const total = quantity * price;
+                subtotal.textContent = `$${total.toFixed(2)}`;   
 			});
 		});
 	}
 
 	increaseQuantity() {
-		const increase = document.querySelectorAll('.increase');
 		increase.forEach((item) => {
-			item.addEventListener('click', () => {
+            let subtotal = item.parentElement.parentElement.querySelector('.subtotal');
+			item.addEventListener('click', (e) => {
+                e.stopImmediatePropagation();
+                console.log(item);
 				item.parentElement.querySelector('.quantity').textContent++;
 				item.parentElement.previousElementSibling.previousElementSibling.querySelector(
 					'.quantity'
 				).textContent++;
+                const quantity = item.parentElement.previousElementSibling.previousElementSibling.children[1].textContent
+                const price = item.parentElement.previousElementSibling.children[1].textContent.substring(1);
+                const total = quantity * price;
+                subtotal.textContent = `$${total.toFixed(2)}`;    
 			});
 		});
 	}
+
+    updateTotals() {
+        let cardTotal = 0;
+        const totals = document.querySelectorAll('.totals');
+        const cardSummary = document.querySelectorAll('.cart-summary');
+        cardSummary.forEach((price) => {
+            price.parentElement.parentElement.querySelectorAll('.subtotal').forEach((subtotal) => {
+            });
+        });
+        totals.forEach((item) => {
+            item.addEventListener('click', () => {
+            });
+        });
+    }
 }
 
 new EcommerceCard();
