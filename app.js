@@ -47,10 +47,13 @@ class EcommerceCard {
 	constructor() {
 		this.addToCart = document.querySelectorAll('.add');
 		this.img = document.createElement('img');
-		this.cardSummary = document.querySelector('.cart .cart-summary');
+		this.cardSummary = document.querySelectorAll('.cart .cart-summary');
 		this.removeFromCard = document.querySelectorAll('.in-cart');
 		this.decrease = document.querySelectorAll('.decrease');
 		this.increase = document.querySelectorAll('.increase');
+		this.subTotals = document.querySelector('.line-item .subtotal');
+		this.tax = document.querySelectorAll('.amount.price.tax');
+		this.totals = document.querySelectorAll('.amount.price.total');
 
 		this.removeCart();
 		this.decreaseQuantity();
@@ -62,16 +65,7 @@ class EcommerceCard {
 	addCart() {
 		this.img.src = './images/check.svg';
 		this.addToCart.forEach((item) => {
-			window.onload = item.addEventListener('click', (e) => {
-				item.classList.remove('add');
-				item.classList.add('in-cart');
-				item.innerHTML = `
-                    <img src="./images/check.svg" alt="check">
-                    In Cart
-                `;
-
-				// if (item.parentElement.querySelector('.menu-item').textContent === )
-				const cardHtml = `
+			let cardHtml = `
                 <li>
                 <div class="plate">
                   ${
@@ -102,10 +96,18 @@ class EcommerceCard {
                 </div>
               </li>
               `;
-			  var s = document.createElement('li');
-			  s.innerHTML = cardHtml;
-			 	this.cardSummary.appendChild(s);
-				 e.stopPropagation();
+
+			item.addEventListener('click', () => {
+				if (item.classList.contains('in-cart')) {
+					return;
+				}
+				item.classList.remove('add');
+				item.classList.add('in-cart');
+				item.innerHTML = `
+                    <img src="./images/check.svg" alt="check">
+                    In Cart
+                `;
+				$('.cart-summary').append(cardHtml);
 			});
 		});
 	}
@@ -165,22 +167,11 @@ class EcommerceCard {
 						1
 					);
 				const total = quantity * price;
+				console.log(price);
 				subtotal.textContent = `$${total.toFixed(2)}`;
+				this.subTotals.textContent = `$${total.toFixed(2)}`;
 			});
 		});
-	}
-
-	updateTotals() {
-		// let cardTotal = 0;
-		// const totals = document.querySelectorAll('.totals');
-		// document.querySelector('.cart-summary').cardSummary.forEach((price) => {
-		//     price.parentElement.parentElement.querySelectorAll('.subtotal').forEach((subtotal) => {
-		//     });
-		// });
-		// totals.forEach((item) => {
-		//     item.addEventListener('click', () => {
-		//     });
-		// });
 	}
 }
 
