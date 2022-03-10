@@ -1,47 +1,52 @@
 const menuItems = [
 	{
 		name: 'French Fries with Ketchup',
-		price: 223,
+		price: 2.23,
 		image: 'plate__french-fries.png',
 		alt: 'French Fries',
 		count: 0,
 	},
 	{
 		name: 'Salmon and Vegetables',
-		price: 512,
+		price: 5.12,
 		image: 'plate__salmon-vegetables.png',
 		alt: 'Salmon and Vegetables',
 		count: 0,
 	},
 	{
 		name: 'Spaghetti Meat Sauce',
-		price: 782,
+		price: 7.82,
 		image: 'plate__spaghetti-meat-sauce.png',
 		alt: 'Spaghetti with Meat Sauce',
 		count: 0,
 	},
 	{
 		name: 'Bacon, Eggs, and Toast',
-		price: 599,
+		price: 5.99,
 		image: 'plate__bacon-eggs.png',
 		alt: 'Bacon, Eggs, and Toast',
 		count: 0,
 	},
 	{
 		name: 'Chicken Salad with Parmesan',
-		price: 698,
+		price: 6.98,
 		image: 'plate__chicken-salad.png',
 		alt: 'Chicken Salad with Parmesan',
 		count: 0,
 	},
 	{
 		name: 'Fish Sticks and Fries',
-		price: 634,
+		price: 6.34,
 		image: 'plate__fish-sticks-fries.png',
 		alt: 'Fish Sticks and Fries',
 		count: 0,
 	},
 ];
+
+let subTotal = document.querySelector('.totals .subtotal');
+let tax = document.querySelector('.totals .tax');
+let total = document.querySelector('.totals .line-item .total');
+let sum = 0;
 
 class EcommerceCard {
 	constructor() {
@@ -51,14 +56,10 @@ class EcommerceCard {
 		this.removeFromCard = document.querySelectorAll('.in-cart');
 		this.decrease = document.querySelectorAll('.decrease');
 		this.increase = document.querySelectorAll('.increase');
-		this.subTotals = document.querySelector('.line-item .subtotal');
-		this.tax = document.querySelectorAll('.amount.price.tax');
-		this.totals = document.querySelectorAll('.amount.price.total');
 
 		this.removeCart();
 		this.decreaseQuantity();
 		this.increaseQuantity();
-		this.updateTotals();
 		this.addCart();
 	}
 
@@ -107,7 +108,7 @@ class EcommerceCard {
                     <img src="./images/check.svg" alt="check">
                     In Cart
                 `;
-				$('.cart-summary').append(cardHtml);
+				this.cardSummary[0].insertAdjacentHTML('beforeend', cardHtml);
 			});
 		});
 	}
@@ -126,6 +127,9 @@ class EcommerceCard {
 	}
 
 	decreaseQuantity() {
+		const extractFunction = (a, b) => {
+			return a - b;
+		};
 		this.decrease.forEach((item) => {
 			let subtotal =
 				item.parentElement.parentElement.querySelector('.subtotal');
@@ -144,13 +148,34 @@ class EcommerceCard {
 					item.parentElement.previousElementSibling.children[1].textContent.substring(
 						1
 					);
-				const total = quantity * price;
-				subtotal.textContent = `$${total.toFixed(2)}`;
+
+				menuItems.forEach((menuItem) => {
+					if (
+						menuItem.name ===
+						item.parentElement.parentElement.querySelector('.menu-item')
+							.textContent
+					) {
+						sum = extractFunction(sum, Number(price));
+						const newTax = `$${parseFloat(sum * 0.0975).toFixed(2)}`;
+						const newSubTotal = `$${parseFloat(sum.toFixed(2))}`;
+						tax.textContent = newTax >= 0 ? newTax : '$0.00';
+						subTotal.textContent = newSubTotal >= 0 ? newSubTotal : '$0.00';
+						total.textContent = `$${(
+							Number(newTax.substring(1)) + Number(newSubTotal.substring(1))
+						).toFixed(2)}`;
+					}
+				});
+				const myTotal = quantity * price;
+				subtotal.textContent = `$${myTotal.toFixed(2)}`;
+				this.totals.textContent = `$${myTotal.toFixed(2)}`;
 			});
 		});
 	}
 
 	increaseQuantity() {
+		const sumFunction = (a, b) => {
+			return a + b;
+		};
 		this.increase.forEach((item) => {
 			let subtotal =
 				item.parentElement.parentElement.querySelector('.subtotal');
@@ -166,10 +191,25 @@ class EcommerceCard {
 					item.parentElement.previousElementSibling.children[1].textContent.substring(
 						1
 					);
-				const total = quantity * price;
-				console.log(price);
-				subtotal.textContent = `$${total.toFixed(2)}`;
-				this.subTotals.textContent = `$${total.toFixed(2)}`;
+				menuItems.forEach((menuItem) => {
+					if (
+						menuItem.name ===
+						item.parentElement.parentElement.querySelector('.menu-item')
+							.textContent
+					) {
+						sum = sumFunction(sum, Number(price));
+						const newTax = `$${parseFloat(sum * 0.0975).toFixed(2)}`;
+						const newSubTotal = `$${parseFloat(sum.toFixed(2))}`;
+						tax.textContent = newTax;
+						subTotal.textContent = newSubTotal;
+						total.textContent = `$${(
+							Number(newTax.substring(1)) + Number(newSubTotal.substring(1))
+						).toFixed(2)}`;
+					}
+				});
+				const myTotal = quantity * price;
+				subtotal.textContent = `$${myTotal.toFixed(2)}`;
+				this.totals.textContent = `$${myTotal.toFixed(2)}`;
 			});
 		});
 	}
